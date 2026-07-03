@@ -6,13 +6,16 @@
 //
 
 import UIKit
+import SnapKit
 
 class CarousleTableViewCell: UITableViewCell {
     
     static let identifier = "CarousleTableViewCell"
     
-    private let carousleData: CarousleModel?
+    private var movies: [ArticleModel] = []
     
+    var didSelectMovie: ((ArticleModel) -> Void)?
+
     private let collectionView: UICollectionView = {
         
         let layout = UICollectionViewFlowLayout()
@@ -26,18 +29,28 @@ class CarousleTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
+        
+        
         collectionView.register(CollectionViewCustomCell.self, forCellWithReuseIdentifier: CollectionViewCustomCell.identifier)
         
         collectionView.delegate = self
         collectionView.dataSource = self
+        
+        contentView.addSubview(collectionView)
+        collectionView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(articles: [CarousleModel]) {
+    func configure(articles: [ArticleModel]) {
+        print("Carousel received:", articles.count)
         
+        self.movies = articles
+        collectionView.reloadData()
     }
 }
 
@@ -45,16 +58,25 @@ extension CarousleTableViewCell: UICollectionViewDelegate, UICollectionViewDataS
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewCustomCell", for: indexPath) as! CollectionViewCustomCell
-        cell.configure(title: carousleData?.title ?? " ", image: carousleData?.image ?? " ")
+        
+        let movie = movies[indexPath.row]
+        cell.configure(with: movie)
+        
         return cell
     }
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        print("Movies:", movies.count)
+        
+        return movies.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath){
+        didSelectMovie?(movies[indexPath.item])
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 250, height: 150)
+        return CGSize(width: 300, height: 250)
     }
 }

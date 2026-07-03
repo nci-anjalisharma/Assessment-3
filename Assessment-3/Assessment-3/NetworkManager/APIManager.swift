@@ -7,6 +7,9 @@
 
 import Foundation
 
+enum APPError: Error {
+    case invalidData
+}
 
 class APIManager {
     
@@ -24,7 +27,10 @@ class APIManager {
                 return
             }
             
-            guard let data = data else { return }
+            guard let data = data else {
+                completion(.failure(APPError.invalidData))
+                return
+            }
             
             let decoder = JSONDecoder()
             do {

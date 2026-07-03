@@ -12,5 +12,5 @@ struct ArticleModel: Codable {
     let id: Int
     let title: String
     let url: String
-    let thumnailUrl: String
+    let thumbnailUrl: String
 }

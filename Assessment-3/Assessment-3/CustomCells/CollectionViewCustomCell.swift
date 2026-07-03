@@ -12,6 +12,8 @@ class CollectionViewCustomCell: UICollectionViewCell {
     
     static let identifier = "CollectionViewCustomCell"
     
+    var movie: ArticleModel?
+    
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -22,7 +24,10 @@ class CollectionViewCustomCell: UICollectionViewCell {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.preferredFont(forTextStyle: .body)
+        label.textColor = .white
         label.numberOfLines = 2
+        label.lineBreakMode = .byWordWrapping
+        
         return label
     }()
     
@@ -37,16 +42,22 @@ class CollectionViewCustomCell: UICollectionViewCell {
         contentView.addSubview(titleLabel)
         
         imageView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.leading.trailing.equalToSuperview()
+            make.height.equalTo(200)
         }
         titleLabel.snp.makeConstraints { make in
             make.top.equalTo(imageView.snp.bottom).offset(8)
+            make.leading.trailing.equalToSuperview().inset(5)
+            make.bottom.equalToSuperview().inset(4)
         }
     }
     
-    func configure(title: String, image: String){
-        self.titleLabel.text = title
-        self.imageView.image = UIImage(named: image)
+    func configure(with movie: ArticleModel){
+        self.movie = movie
+        
+        titleLabel.text = movie.title
+        imageView.loadImage(from: movie.thumbnailUrl)
+        
     }
     
     required init?(coder: NSCoder) {

@@ -11,40 +11,12 @@ import UIKit
 
 class HomeViewModel {
     
-    var allData: [ArticleModel] = []
-    
-    let pageViewData: PageModel?
+    private(set) var allData: [ArticleModel] = []
     
     var didUpdateData: (() -> Void)?
     
-    let collectionViewData1: CarousleModel?
-    let collectionViewData2: CarousleModel?
-    let collectionViewData3: CarousleModel?
-//    
-//    var pageArticles: [PageModel] {
-//        let filteredArticles = allData.map {
-//            $0.id <= 10
-//        }
-////        return filteredArticles
-//    }
-    
-//    var collectionViewData1Articles: [ArticleModel] {
-//        allData.map {
-//            $0.id > 10 && <= 20 ? $0 : nil
-//        }
-//    }
-//    
-//    var collectionViewData2Articles: [ArticleModel] {
-//        allData.filter {
-//            $0.id > 20 && <=30
-//        }
-//    }
-//    
-//    var collectionViewData3Articles: [ArticleModel] {
-//        allData.map {
-//            $0.id > 30 && <=40 ? $0 : nil
-//        }
-//    }
+    var didReceiveError: ((String) -> Void)?
+
     
     func fetchAllData() {
 
@@ -53,14 +25,35 @@ class HomeViewModel {
             switch result {
             
             case .success(let data):
+                
+                print("Fetched:", data.count)
                 self.allData = data
-                self.didUpdateData!()
+                DispatchQueue.main.async {
+                    self.didUpdateData?()
+                }
             
             case .failure(let error):
-                print(error)
+                DispatchQueue.main.async {
+                    self.didReceiveError?(error.localizedDescription)
+                }
             }
             
         }
+    }
+
+    var pageViewMovies: [ArticleModel] {
+        Array(allData.prefix(5))
+    }
+    
+    var collectionView1: [ArticleModel] {
+        Array(allData.dropFirst(5).prefix(10))
+    }
+    var collectionView2: [ArticleModel] {
+        Array(allData.dropFirst(15).prefix(10))
+    }
+    
+    var collectionView3: [ArticleModel] {
+        Array(allData.dropFirst(25).prefix(10))
     }
     
 }
